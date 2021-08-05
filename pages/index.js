@@ -1,82 +1,135 @@
-import Head from 'next/head'
+import ReactPlayer from 'react-player'
+import { useState, useEffect, useRef } from 'react'
+
+// spoti:
+// https://open.spotify.com/embed/track/79k4PkE9Hllo7OqZm5Q01R
+// https://open.spotify.com/track/79k4PkE9Hllo7OqZm5Q01R?si=40f5fd43e2124966
+// 79k4PkE9Hllo7OqZm5Q01R
+
+const items = [
+  {
+    artist: 'Babyfather',
+    track: 'God Hour',
+    url: 'https://open.spotify.com/embed/track/79k4PkE9Hllo7OqZm5Q01R',
+
+    source: 'spotify',
+  },
+  {
+    artist: 'Hype Williams',
+    track: 'The Attitude Era',
+    url: 'https://youtu.be/pQJ3wauYJHk?t=1333',
+    source: 'youtube',
+    timecodes: ['22:00'],
+  },
+  {
+    artist: 'Rinse FM',
+    track: 'Dr Banana with Ponura',
+    url: 'https://soundcloud.com/rinsefm/drbanana250621#t=1:57:25',
+    source: 'soundcloud',
+    timecodes: ['1:57:25'],
+  },
+  // {
+  //   artist: 'WAVESENSE',
+  //   track: 'Undertow',
+  //   url:
+  //     'https://soundcloud.com/urwaxx/wavesense-undertow-sampler-tapedigital#t=1:12',
+
+  //   source: 'soundcloud',
+  //   timecodes: ['1:12'],
+  // },
+]
+
+// https://youtu.be/pQJ3wauYJHk?t=3903
 
 export default function Home() {
+  const [selectedItem, setSelectedItem] = useState(undefined)
+
+  const playingItem = items[selectedItem]
+  let playingItemComponent
+
+  if (playingItem) {
+    switch (playingItem.source) {
+      case 'spotify':
+        playingItemComponent = <SpotifyItem url={playingItem.url} />
+        break
+      case 'soundcloud':
+        playingItemComponent = <SoundcloudItem url={playingItem.url} />
+        break
+      case 'youtube':
+        playingItemComponent = <YoutubeItem url={playingItem.url} />
+        break
+    }
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
-
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="p-3 font-mono text-lg bg-gray-100 rounded-md">
-            pages/index.js
-          </code>
-        </p>
-
-        <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className="flex items-center justify-center w-full h-24 border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="h-4 ml-2" />
-        </a>
-      </footer>
+    <div className="flex flex-col items-center min-h-screen pt-48 w-4/6">
+      <div className="flex flex-col max-w-xl">
+        {items.map((item, index) => (
+          <div
+            className={`flex cursor-pointer  ${
+              selectedItem === index
+                ? 'text-red-600 hover:text-red-600'
+                : 'text-gray-900 hover:text-indigo-700'
+            }`}
+            style={{ fontSize: 36 }}
+            onClick={() => setSelectedItem(index)}
+          >{`${item.artist} - ${item.track}`}</div>
+        ))}
+      </div>
+      <div className="fixed bottom-0 left-0 w-full">{playingItemComponent}</div>
     </div>
+  )
+}
+
+const SpotifyItem = ({ url }) => (
+  <iframe
+    src={url}
+    width="100%"
+    height="80"
+    frameBorder="0"
+    allowtransparency="true"
+    allow="encrypted-media"
+  ></iframe>
+)
+
+const SoundcloudItem = ({
+  url = 'https://soundcloud.com/rinsefm/drbanana250621#t=1:57:25',
+}) => {
+  const player = useRef(null)
+
+  useEffect(() => {
+    // duration / timecode
+    player.current.seekTo(0.1)
+  }, [player])
+
+  return (
+    <ReactPlayer
+      ref={player}
+      url={url}
+      playing
+      volume={0.01}
+      width="100%"
+      height="130px"
+    />
+  )
+}
+
+const YoutubeItem = ({
+  url = 'https://www.youtube.com/embed/pQJ3wauYJHk?start=2527',
+}) => {
+  return (
+    <ReactPlayer
+      url={url}
+      playing
+      volume={0.01}
+      controls
+      width="100%"
+      height="130px"
+      config={{
+        youtube: {
+          playerVars: { showinfo: 1, fs: 0, modestbranding: 1 },
+        },
+      }}
+    />
   )
 }
