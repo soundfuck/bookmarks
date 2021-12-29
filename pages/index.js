@@ -107,7 +107,7 @@ const SoundcloudItem = ({
       ref={player}
       url={url}
       playing
-      volume={0.01}
+      volume={0.8}
       width="100%"
       height="130px"
     />
@@ -121,7 +121,7 @@ const YoutubeItem = ({
     <ReactPlayer
       url={url}
       playing
-      volume={0.01}
+      volume={0.1}
       controls
       width="100%"
       height="130px"
